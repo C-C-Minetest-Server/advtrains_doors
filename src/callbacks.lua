@@ -31,7 +31,7 @@ minetest.register_abm({
     catch_up = false,
     action = function(pos, node, active_object_count, active_object_count_wider)
         local def = minetest.registered_nodes[node.name]
-        local dir = vector.multiply(minetest.facedir_to_dir(node.param2), -1) -- trains are in front of the gate
+        local dir = vector.multiply(minetest.fourdir_to_dir(node.param2), -1) -- trains are in front of the gate
         for _, entity in ipairs(minetest.get_objects_inside_radius(vector.add(pos, dir), 2)) do
             local luaentity = entity:get_luaentity()
             if luaentity and luaentity.is_wagon then
