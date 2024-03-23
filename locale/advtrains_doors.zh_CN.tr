@@ -1,0 +1,5 @@
+# textdomain: advtrains_doors
+
+##[ src/api.lua ]##
+@1 Platform Gate=@1低站台门
+@1 Platform Gate (Fixed)=@1低站台门（不打开）
