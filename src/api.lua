@@ -89,7 +89,7 @@ function _ad.register_platform_gate(node_name)
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
         paramtype = "light",
-        paramtype2 = "facedir",
+        paramtype2 = "4dir",
         node_box = gate_closed_box,
         selection_box = gate_closed_box,
 
@@ -105,7 +105,7 @@ function _ad.register_platform_gate(node_name)
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
         paramtype = "light",
-        paramtype2 = "facedir",
+        paramtype2 = "4dir",
         node_box = gate_opened_box,
         selection_box = gate_opened_box,
 
@@ -124,7 +124,7 @@ function _ad.register_platform_gate(node_name)
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
         paramtype = "light",
-        paramtype2 = "facedir",
+        paramtype2 = "4dir",
         node_box = gate_fixed_box,
         selection_box = gate_fixed_box,
 
