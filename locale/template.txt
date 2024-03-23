@@ -1,0 +1,5 @@
+# textdomain: advtrains_doors
+
+##[ src/api.lua ]##
+@1 Platform Gate=
+@1 Platform Gate (Fixed)=
