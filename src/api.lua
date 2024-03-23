@@ -30,14 +30,14 @@ local gate_closed_box = {
     type = "fixed",
     fixed = {
         { -0.5, -0.5, 7 / 16 - 1 / 64, -0.05, 0.5, 0.5 - 1 / 64 },
-        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5, 0.5, 0.5 - 1 / 64 },
+        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5,   0.5, 0.5 - 1 / 64 },
     },
 }
 local gate_opened_box = {
     type = "fixed",
     fixed = {
         { -0.90, -0.5, 7 / 16 - 1 / 64, -0.45, 0.5, 0.5 - 1 / 64 },
-        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9, 0.5, 0.5 - 1 / 64 },
+        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9,   0.5, 0.5 - 1 / 64 },
     },
 }
 local gate_fixed_box = {
@@ -52,16 +52,27 @@ local double_gate_closed_box = {
     type = "fixed",
     fixed = {
         { -0.5, -0.5, 7 / 16 - 1 / 64, -0.05, 1.5, 0.5 - 1 / 64 },
-        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5, 1.5, 0.5 - 1 / 64 },
+        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5,   1.5, 0.5 - 1 / 64 },
     },
 }
 local double_gate_opened_box = {
     type = "fixed",
     fixed = {
         { -0.90, -0.5, 7 / 16 - 1 / 64, -0.45, 1.5, 0.5 - 1 / 64 },
-        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9, 1.5, 0.5 - 1 / 64 },
+        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9,   1.5, 0.5 - 1 / 64 },
     },
 }
+
+local mese, steel
+if minetest.get_modpath("default") then
+    mese = "default:mese_crystal_fragment"
+    steel = "default:steel_ingot"
+elseif minetest.get_modpath("mcl_core") and minetest.get_modpath("mesecons_wires") then
+    mese = "mesecons:redstone"
+    steel = "mcl_core:iron_ingot"
+else
+    logger:warning("No compactible game found, no crafting recipies will be registered.")
+end
 
 local keep_groups = {
     -- General groups
@@ -69,6 +80,12 @@ local keep_groups = {
 
     -- Minetest Game dig groups
     "crumby", "cracky", "snappy", "choppy", "fleshy", "explody", "oddly_breakable_by_hand", "dig_immediate",
+
+    -- MineClone2 dig groups
+    "pickaxey", "axey", "shovely", "swordly", "shearsy", "handy", "creative_breakable",
+
+    -- MineClone2 interaction groups
+    "flammable", "fire_encouragement", "fire_flammability",
 }
 local function prepare_groups(groups)
     if not groups then return {} end
@@ -141,6 +158,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_closed_box,
 
         groups = groups_for_gate,
+        sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
 
@@ -159,6 +177,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_opened_box,
 
         groups = groups_for_gate,
+        sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
         drop = node_name .. "_platform_gate",
@@ -180,6 +199,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_fixed_box,
 
         groups = groups, -- NO advtrains_doors
+        sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
     })
@@ -197,6 +217,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = double_gate_closed_box,
 
         groups = groups_for_gate,
+        sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
 
@@ -218,6 +239,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = double_gate_opened_box,
 
         groups = groups_for_gate,
+        sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
         drop = node_name .. "_platform_screen",
@@ -231,21 +253,23 @@ function _ad.register_platform_gate(node_name)
 
     -- fixed screen (just use two fixed gates!)
 
-    -- Crafting recipie for gate
-    minetest.register_craft({
-        output = node_name .. "_platform_gate 4",
-        recipe = {
-            { node_name, "default:mese_crystal_fragment", node_name }
-        }
-    })
+    if mese and steel then
+        -- Crafting recipie for gate
+        minetest.register_craft({
+            output = node_name .. "_platform_gate 4",
+            recipe = {
+                { node_name, mese, node_name }
+            }
+        })
 
-    -- Crafting recipe for fixed
-    minetest.register_craft({
-        output = node_name .. "_platform_gate_fixed 4",
-        recipe = {
-            { node_name, "default:steel_ingot", node_name }
-        }
-    })
+        -- Crafting recipe for fixed
+        minetest.register_craft({
+            output = node_name .. "_platform_gate_fixed 4",
+            recipe = {
+                { node_name, steel, node_name }
+            }
+        })
+    end
 
     -- Crafting recipe for screen
     minetest.register_craft({
