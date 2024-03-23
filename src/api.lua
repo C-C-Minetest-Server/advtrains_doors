@@ -62,12 +62,6 @@ local double_gate_opened_box = {
         { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9, 1.5, 0.5 - 1 / 64 },
     },
 }
-local double_gate_fixed_box = {
-    type = "fixed",
-    fixed = {
-        { -0.5, -0.5, 0.4, 0.5, 1.5, 0.5 },
-    },
-}
 
 local keep_groups = {
     -- General groups
@@ -97,7 +91,7 @@ minetest.register_node("advtrains_doors:platform_screen_upper", {
     is_ground_content = false,
     groups = {
         not_in_creative_inventory = 1,
-        advtrains_doors = 1,
+        not_blocking_trains = 1
     },
 })
 
