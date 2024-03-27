@@ -4,26 +4,66 @@
     advtrains_doors: Platform screen doors for Advtrains
     Copyright (C) 2024  1F616EMO
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 
 local _ad = advtrains_doors
 local _int = _ad.internal
 local logger = _int.logger:sublogger("register")
 
-_ad.register_platform_gate("default:steelblock")
-_ad.register_platform_gate("default:copperblock")
-_ad.register_platform_gate("default:glass")
-_ad.register_platform_gate("default:obsidian_glass")
+local queue = {}
+
+if minetest.get_modpath("default") then
+    queue[#queue+1] = "default:steelblock"
+    queue[#queue+1] = "default:copperblock"
+    queue[#queue+1] = "default:glass"
+    queue[#queue+1] = "default:obsidian_glass"
+end
+
+if minetest.get_modpath("moreblocks") then
+    queue[#queue+1] = "moreblocks:iron_glass"
+    queue[#queue+1] = "moreblocks:coal_glass"
+    queue[#queue+1] = "moreblocks:clean_glass"
+end
+
+if minetest.get_modpath("mcl_core") then
+    queue[#queue+1] = "mcl_core:ironblock"
+
+    queue[#queue+1] = "mcl_core:glass"
+    for _, color in ipairs({
+        "red", "green", "blue", "light_blue", "black", "white", "yellow", "brown", "orange", "pink",
+        "gray", "lime", "silver", "magenta", "purple", "cyan",
+    }) do
+        queue[#queue+1] = "mcl_core:glass_" .. color
+    end
+end
+
+if minetest.get_modpath("void_essential") then
+    queue[#queue+1] = "void_essential:stone"
+    queue[#queue+1] = "void_essential:water_source"
+    queue[#queue+1] = "void_essential:river_water_source"
+end
+
+-- TODO: Implement copper block after dealing with oxidation
+--       (or simply only allow waxed?)
+
+for _, name in ipairs(queue) do
+    if not minetest.registered_nodes[name] then
+        logger:error(("Node %s loaded in the registeration queue but is not found."):format(
+            name
+        ))
+    else
+        _ad.register_platform_gate(name)
+    end
+end
