@@ -1,4 +1,3 @@
-
 -- advtrains_doors/src/api.lua
 -- API for registering gates
 --[[
@@ -30,21 +29,43 @@ local S = _int.S
 local gate_closed_box = {
     type = "fixed",
     fixed = {
-        { -0.5, -0.5, 7/16 - 1/64, -0.05, 0.5, 0.5 - 1/64 },
-        { 0.05, -0.5, 7/16 - 1/64, 0.5,   0.5, 0.5 - 1/64},
+        { -0.5, -0.5, 7 / 16 - 1 / 64, -0.05, 0.5, 0.5 - 1 / 64 },
+        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5, 0.5, 0.5 - 1 / 64 },
     },
 }
 local gate_opened_box = {
     type = "fixed",
     fixed = {
-        { -0.90, -0.5, 7/16 - 1/64, -0.45, 0.5, 0.5 - 1/64 },
-        { 0.45,  -0.5, 7/16 - 1/64, 0.9,   0.5, 0.5 - 1/64 },
+        { -0.90, -0.5, 7 / 16 - 1 / 64, -0.45, 0.5, 0.5 - 1 / 64 },
+        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9, 0.5, 0.5 - 1 / 64 },
     },
 }
 local gate_fixed_box = {
     type = "fixed",
     fixed = {
         { -0.5, -0.5, 0.4, 0.5, 0.5, 0.5 },
+    },
+}
+
+-- Modified from above
+local double_gate_closed_box = {
+    type = "fixed",
+    fixed = {
+        { -0.5, -0.5, 7 / 16 - 1 / 64, -0.05, 1.5, 0.5 - 1 / 64 },
+        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5, 1.5, 0.5 - 1 / 64 },
+    },
+}
+local double_gate_opened_box = {
+    type = "fixed",
+    fixed = {
+        { -0.90, -0.5, 7 / 16 - 1 / 64, -0.45, 1.5, 0.5 - 1 / 64 },
+        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9, 1.5, 0.5 - 1 / 64 },
+    },
+}
+local double_gate_fixed_box = {
+    type = "fixed",
+    fixed = {
+        { -0.5, -0.5, 0.4, 0.5, 1.5, 0.5 },
     },
 }
 
@@ -63,6 +84,38 @@ local function prepare_groups(groups)
         rtn[key] = groups[key]
     end
     return rtn
+end
+
+minetest.register_node("advtrains_doors:platform_screen_upper", {
+    drawtype = "airlike",
+    paramtype = "light",
+    drop = "",
+    walkable = false,
+    pointable = false,
+    diggable = true,
+    sunlight_propagates = true,
+    is_ground_content = false,
+    groups = {
+        not_in_creative_inventory = 1,
+        advtrains_doors = 1,
+    },
+})
+
+local function screen_on_construct(pos)
+    pos.y = pos.y + 1
+    local node = minetest.get_node(pos)
+    if node and node.name == "air" then
+        node.name = "advtrains_doors:platform_screen_upper"
+        minetest.set_node(pos, node)
+    end
+end
+
+local function screen_on_destruct(pos)
+    pos.y = pos.y + 1
+    local node = minetest.get_node(pos)
+    if node and node.name == "advtrains_doors:platform_screen_upper" then
+        minetest.remove_node(pos)
+    end
 end
 
 function _ad.register_platform_gate(node_name)
@@ -94,6 +147,8 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_closed_box,
 
         groups = groups_for_gate,
+        sunlight_propagates = true,
+        is_ground_content = false,
 
         _advtrains_doors_state = "closed",
         _advtrains_doors_counterpart = node_name .. "_platform_gate_opened",
@@ -110,6 +165,8 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_opened_box,
 
         groups = groups_for_gate,
+        sunlight_propagates = true,
+        is_ground_content = false,
         drop = node_name .. "_platform_gate",
 
         _advtrains_doors_state = "opened",
@@ -129,7 +186,56 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_fixed_box,
 
         groups = groups, -- NO advtrains_doors
+        sunlight_propagates = true,
+        is_ground_content = false,
     })
+
+    -- Closed screen
+    minetest.register_node(":" .. node_name .. "_platform_screen", {
+        description = S("@1 Platform Screen Door", description),
+
+        drawtype = "nodebox",
+        tiles = tiles,
+        use_texture_alpha = node_def.use_texture_alpha,
+        paramtype = "light",
+        paramtype2 = "4dir",
+        node_box = double_gate_closed_box,
+        selection_box = double_gate_closed_box,
+
+        groups = groups_for_gate,
+        sunlight_propagates = true,
+        is_ground_content = false,
+
+        _advtrains_doors_state = "closed",
+        _advtrains_doors_counterpart = node_name .. "_platform_screen_opened",
+
+        on_construct = screen_on_construct,
+        on_destruct = screen_on_destruct,
+    })
+
+    -- Opened screen
+    minetest.register_node(":" .. node_name .. "_platform_screen_opened", {
+        drawtype = "nodebox",
+        tiles = tiles,
+        use_texture_alpha = node_def.use_texture_alpha,
+        paramtype = "light",
+        paramtype2 = "4dir",
+        node_box = double_gate_opened_box,
+        selection_box = double_gate_opened_box,
+
+        groups = groups_for_gate,
+        sunlight_propagates = true,
+        is_ground_content = false,
+        drop = node_name .. "_platform_screen",
+
+        _advtrains_doors_state = "opened",
+        _advtrains_doors_counterpart = node_name .. "_platform_screen",
+
+        on_construct = screen_on_construct,
+        on_destruct = screen_on_destruct,
+    })
+
+    -- fixed screen (just use two fixed gates!)
 
     -- Crafting recipie for gate
     minetest.register_craft({
@@ -145,5 +251,19 @@ function _ad.register_platform_gate(node_name)
         recipe = {
             { node_name, "default:steel_ingot", node_name }
         }
+    })
+
+    -- Crafting recipe for screen
+    minetest.register_craft({
+        type = "shapeless",
+        output = node_name .. "_platform_screen",
+        recipe = { node_name .. "_platform_gate", node_name .. "_platform_gate" }
+    })
+
+    -- screen back to recipe
+    minetest.register_craft({
+        type = "shapeless",
+        output = node_name .. "_platform_gate 2",
+        recipe = { node_name .. "_platform_screen" }
     })
 end
