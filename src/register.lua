@@ -24,5 +24,6 @@ local _int = _ad.internal
 local logger = _int.logger:sublogger("register")
 
 _ad.register_platform_gate("default:steelblock")
+_ad.register_platform_gate("default:copperblock")
 _ad.register_platform_gate("default:glass")
 _ad.register_platform_gate("default:obsidian_glass")
