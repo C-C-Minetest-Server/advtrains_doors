@@ -128,6 +128,8 @@ local function screen_on_destruct(pos)
     end
 end
 
+on_rotate = screwdriver.rotate_simple
+
 function _ad.register_platform_gate(node_name)
     local node_def = logger:assert(minetest.registered_nodes[node_name],
         "Node " .. node_name .. " not found!")
@@ -152,9 +154,10 @@ function _ad.register_platform_gate(node_name)
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
         paramtype = "light",
-        paramtype2 = "4dir",
+        paramtype2 = "facedir",
         node_box = gate_closed_box,
         selection_box = gate_closed_box,
+        on_rotate = on_rotate,
 
         groups = groups_for_gate,
         sounds = node_def.sounds,
@@ -171,9 +174,10 @@ function _ad.register_platform_gate(node_name)
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
         paramtype = "light",
-        paramtype2 = "4dir",
+        paramtype2 = "facedir",
         node_box = gate_opened_box,
         selection_box = gate_opened_box,
+        on_rotate = on_rotate,
 
         groups = groups_for_gate,
         sounds = node_def.sounds,
@@ -193,9 +197,10 @@ function _ad.register_platform_gate(node_name)
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
         paramtype = "light",
-        paramtype2 = "4dir",
+        paramtype2 = "facedir",
         node_box = gate_fixed_box,
         selection_box = gate_fixed_box,
+        on_rotate = on_rotate,
 
         groups = groups, -- NO advtrains_doors
         sounds = node_def.sounds,
@@ -211,9 +216,10 @@ function _ad.register_platform_gate(node_name)
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
         paramtype = "light",
-        paramtype2 = "4dir",
+        paramtype2 = "facedir",
         node_box = double_gate_closed_box,
         selection_box = double_gate_closed_box,
+        on_rotate = on_rotate,
 
         groups = groups_for_gate,
         sounds = node_def.sounds,
@@ -233,9 +239,10 @@ function _ad.register_platform_gate(node_name)
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
         paramtype = "light",
-        paramtype2 = "4dir",
+        paramtype2 = "facedir",
         node_box = double_gate_opened_box,
         selection_box = double_gate_opened_box,
+        on_rotate = on_rotate,
 
         groups = groups_for_gate,
         sounds = node_def.sounds,
