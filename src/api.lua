@@ -78,7 +78,7 @@ local keep_groups = {
     "not_in_creative_inventory",
 
     -- Minetest Game dig groups
-    "crumby", "cracky", "snappy", "choppy", "fleshy", "explody", "oddly_breakable_by_hand", "dig_immediate",
+    "crumbly", "cracky", "snappy", "choppy", "fleshy", "explody", "oddly_breakable_by_hand", "dig_immediate",
 
     -- MineClone2 dig groups
     "pickaxey", "axey", "shovely", "swordly", "shearsy", "handy", "creative_breakable",
