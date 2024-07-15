@@ -128,7 +128,7 @@ local function screen_on_destruct(pos)
     end
 end
 
-on_rotate = screwdriver.rotate_simple
+on_rotate = minetest.global_exists("screwdriver") and screwdriver.rotate_simple or nil
 
 function _ad.register_platform_gate(node_name)
     local node_def = logger:assert(minetest.registered_nodes[node_name],
