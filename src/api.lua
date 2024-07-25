@@ -46,7 +46,22 @@ local gate_fixed_box = {
     },
 }
 
--- Modified from above
+-- lower gate
+local low_gate_closed_box = table.copy(gate_closed_box)
+low_gate_closed_box.fixed[1][2] = low_gate_closed_box.fixed[1][2] - 0.5
+low_gate_closed_box.fixed[1][5] = low_gate_closed_box.fixed[1][5] - 0.5
+low_gate_closed_box.fixed[2][2] = low_gate_closed_box.fixed[2][2] - 0.5
+low_gate_closed_box.fixed[2][5] = low_gate_closed_box.fixed[2][5] - 0.5
+local low_gate_opened_box = table.copy(gate_opened_box)
+low_gate_opened_box.fixed[1][2] = low_gate_opened_box.fixed[1][2] - 0.5
+low_gate_opened_box.fixed[1][5] = low_gate_opened_box.fixed[1][5] - 0.5
+low_gate_opened_box.fixed[2][2] = low_gate_opened_box.fixed[2][2] - 0.5
+low_gate_opened_box.fixed[2][5] = low_gate_opened_box.fixed[2][5] - 0.5
+local low_gate_fixed_box = table.copy(gate_fixed_box)
+low_gate_fixed_box.fixed[1][2] = low_gate_fixed_box.fixed[1][2] - 0.5
+low_gate_fixed_box.fixed[1][5] = low_gate_fixed_box.fixed[1][5] - 0.5
+
+-- Modified from gate
 local double_gate_closed_box = {
     type = "fixed",
     fixed = {
@@ -200,6 +215,65 @@ function _ad.register_platform_gate(node_name)
         paramtype2 = "facedir",
         node_box = gate_fixed_box,
         selection_box = gate_fixed_box,
+        on_rotate = on_rotate,
+
+        groups = groups, -- NO advtrains_doors
+        sounds = node_def.sounds,
+        sunlight_propagates = true,
+        is_ground_content = false,
+    })
+
+    -- Lower Closed gate
+    minetest.register_node(":" .. node_name .. "_low_platform_gate", {
+        description = S("Lower @1 Platform Gate", description),
+
+        drawtype = "nodebox",
+        tiles = tiles,
+        use_texture_alpha = node_def.use_texture_alpha,
+        paramtype = "light",
+        paramtype2 = "facedir",
+        node_box = low_gate_closed_box,
+        on_rotate = on_rotate,
+
+        groups = groups_for_gate,
+        sounds = node_def.sounds,
+        sunlight_propagates = true,
+        is_ground_content = false,
+
+        _advtrains_doors_state = "closed",
+        _advtrains_doors_counterpart = node_name .. "_low_platform_gate_opened",
+    })
+
+    -- Opened gate - not obtainable
+    minetest.register_node(":" .. node_name .. "_low_platform_gate_opened", {
+        drawtype = "nodebox",
+        tiles = tiles,
+        use_texture_alpha = node_def.use_texture_alpha,
+        paramtype = "light",
+        paramtype2 = "facedir",
+        node_box = low_gate_opened_box,
+        on_rotate = on_rotate,
+
+        groups = groups_for_gate,
+        sounds = node_def.sounds,
+        sunlight_propagates = true,
+        is_ground_content = false,
+        drop = node_name .. "_platform_gate",
+
+        _advtrains_doors_state = "opened",
+        _advtrains_doors_counterpart = node_name .. "_low_platform_gate",
+    })
+
+    -- Fixed gate - won't open
+    minetest.register_node(":" .. node_name .. "_low_platform_gate_fixed", {
+        description = S("Lower @1 Platform Gate (Fixed)", description),
+
+        drawtype = "nodebox",
+        tiles = tiles,
+        use_texture_alpha = node_def.use_texture_alpha,
+        paramtype = "light",
+        paramtype2 = "facedir",
+        node_box = low_gate_fixed_box,
         on_rotate = on_rotate,
 
         groups = groups, -- NO advtrains_doors
