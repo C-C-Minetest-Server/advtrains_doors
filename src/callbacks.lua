@@ -18,20 +18,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 
-local minetest, vector, advtrains, atfloor, math = minetest, vector, advtrains, atfloor, math
+local minetest, advtrains, math = minetest, advtrains, math
+local abs, floor, round = math.abs, math.floor, math.round
 
 local _ad = advtrains_doors
 local _int = _ad.internal
-local logger = _int.logger:sublogger("callbacks")
+-- local logger = _int.logger:sublogger("callbacks")
 
-local doors_open_pos = {}
+local doors_opened_pos = {}
 
 local default_door_entry = { -1, 0, 1 }
 
 local function path_get_adjacent(train, index)
-    local i_floor = atfloor(index)
+    local i_floor = floor(index)
     local p_floor = advtrains.path_get(train, i_floor)
-    if math.abs(i_floor - index) < 0.3 then
+    if abs(i_floor - index) < 0.3 then
         return { p_floor }
     end
     local i_ceil = i_floor + 1
@@ -54,8 +55,8 @@ minetest.register_globalstep(function()
     total_steps = 0
 
     -- Clear hash table
-    for k in pairs(doors_open_pos) do
-        doors_open_pos[k] = nil
+    for k in pairs(doors_opened_pos) do
+        doors_opened_pos[k] = nil
     end
 
     for train_id, train in pairs(advtrains.trains) do
@@ -69,14 +70,34 @@ minetest.register_globalstep(function()
                         -- Open doors at where door_entry are
                         -- see: wagon:on_step
                         local index = advtrains.path_get_index_by_offset(train, train.index, -wagon_data.pos_in_train)
-                        local fct = wagon_data.wagon_flipped and -1 or 1
-                        local aci = advtrains.path_get_index_by_offset(train, index, ino * fct)
-                        local ix1, ix2 = advtrains.path_get_adjacent(train, aci)
-                        local add = { x = (ix2.z - ix1.z) * train.door_open, y = 1, z = (ix1.x - ix2.x) *
-                        train.door_open }
-                        for _, pos in ipairs(path_get_adjacent(train, aci)) do
-                            local platform_pos = vector.round(vector.add(pos, add))
-                            doors_open_pos[minetest.hash_node_position(platform_pos)] = true
+                        if advtrains.is_node_loaded(advtrains.path_get(train, floor(index))) then
+                            local fct = wagon_data.wagon_flipped and -1 or 1
+                            local aci = advtrains.path_get_index_by_offset(train, index, ino * fct)
+                            local ix1, ix2 = advtrains.path_get_adjacent(train, aci)
+                            local add = {
+                                x = (ix2.z - ix1.z) * train.door_open,
+                                y = 1,
+                                z = (ix1.x - ix2.x) * train.door_open
+                            }
+                            for _, pos in ipairs(path_get_adjacent(train, aci)) do
+                                local platform_pos = {
+                                    x = round(pos.x + add.x),
+                                    y = round(pos.y + add.y),
+                                    z = round(pos.z + add.z),
+                                }
+                                if advtrains.is_node_loaded(platform_pos) then
+                                    local hash = minetest.hash_node_position(platform_pos)
+                                    local node = minetest.get_node(platform_pos)
+                                    local def = minetest.registered_nodes[node.name]
+                                    if not doors_opened_pos[hash] and def.groups and def.groups.advtrains_doors == 1 then
+                                        if def.groups.advtrains_doors_closed == 1 then
+                                            node.name = def._advtrains_doors_counterpart
+                                            minetest.swap_node(platform_pos, node)
+                                        end
+                                        doors_opened_pos[hash] = true
+                                    end
+                                end
+                            end
                         end
                     end
                 end
@@ -86,23 +107,14 @@ minetest.register_globalstep(function()
 end)
 
 minetest.register_abm({
-    label = "Open/Close advtrains doors",
-    nodenames = { "group:advtrains_doors" },
-    interval = 0.1,
+    label = "Close advtrains doors",
+    nodenames = { "group:advtrains_doors_opened" },
+    interval = 0.5,
     chance = 1,
     catch_up = false,
-    action = function(pos, node, active_object_count, active_object_count_wider)
-        if node.param2 % 4 ~= node.param2 then
-            node.param2 = node.param2 % 4
-            minetest.swap_node(pos, node)
-        end
+    action = function(pos, node)
         local def = minetest.registered_nodes[node.name]
-        if doors_open_pos[minetest.hash_node_position(pos)] then
-            if def._advtrains_doors_state == "closed" then
-                node.name = def._advtrains_doors_counterpart
-                minetest.swap_node(pos, node)
-            end
-        elseif def._advtrains_doors_state == "opened" then
+        if not doors_opened_pos[minetest.hash_node_position(pos)] then
             node.name = def._advtrains_doors_counterpart
             minetest.swap_node(pos, node)
         end

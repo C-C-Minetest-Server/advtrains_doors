@@ -138,8 +138,12 @@ function _ad.register_platform_gate(node_name)
 
     local groups = prepare_groups(node_def.groups)
     groups.not_blocking_trains = 1
-    local groups_for_gate = table.copy(groups)
-    groups_for_gate.advtrains_doors = 1
+    local groups_for_gate_closed = table.copy(groups)
+    groups_for_gate_closed.advtrains_doors = 1
+    groups_for_gate_closed.advtrains_doors_closed = 1
+    local groups_for_gate_opened = table.copy(groups)
+    groups_for_gate_opened.advtrains_doors = 1
+    groups_for_gate_opened.advtrains_doors_opened = 1
 
     local tiles = node_def.tiles
     if node_def.drawtype == "glasslike_framed_optional" then
@@ -159,7 +163,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_closed_box,
         on_rotate = on_rotate,
 
-        groups = groups_for_gate,
+        groups = groups_for_gate_closed,
         sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
@@ -179,7 +183,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_opened_box,
         on_rotate = on_rotate,
 
-        groups = groups_for_gate,
+        groups = groups_for_gate_opened,
         sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
@@ -221,7 +225,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = double_gate_closed_box,
         on_rotate = on_rotate,
 
-        groups = groups_for_gate,
+        groups = groups_for_gate_closed,
         sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
@@ -244,7 +248,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = double_gate_opened_box,
         on_rotate = on_rotate,
 
-        groups = groups_for_gate,
+        groups = groups_for_gate_opened,
         sounds = node_def.sounds,
         sunlight_propagates = true,
         is_ground_content = false,
