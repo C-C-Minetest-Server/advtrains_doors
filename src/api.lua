@@ -195,6 +195,7 @@ function _ad.register_platform_gate(node_name)
         paramtype2 = "facedir",
         node_box = gate_closed_box,
         selection_box = gate_closed_box,
+        collision_box = gate_closed_extended_box,
         on_rotate = on_rotate,
 
         groups = groups_for_gate_closed,
@@ -215,6 +216,7 @@ function _ad.register_platform_gate(node_name)
         paramtype2 = "facedir",
         node_box = gate_opened_box,
         selection_box = gate_opened_box,
+        collision_box = gate_opened_extended_box,
         on_rotate = on_rotate,
 
         groups = groups_for_gate_opened,
@@ -238,6 +240,7 @@ function _ad.register_platform_gate(node_name)
         paramtype2 = "facedir",
         node_box = gate_fixed_box,
         selection_box = gate_fixed_box,
+        collision_box = gate_fixed_extended_box,
         on_rotate = on_rotate,
 
         groups = groups, -- NO advtrains_doors
