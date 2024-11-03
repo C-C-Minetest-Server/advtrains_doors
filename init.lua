@@ -22,9 +22,9 @@ advtrains_doors = {}
 advtrains_doors.internal = {}
 
 advtrains_doors.internal.logger = logging.logger("advtrains_doors")
-advtrains_doors.internal.S = minetest.get_translator("advtrains_doors")
+advtrains_doors.internal.S = core.get_translator("advtrains_doors")
 
-local MP = minetest.get_modpath("advtrains_doors")
+local MP = core.get_modpath("advtrains_doors")
 
 dofile(MP .. "/src/api.lua")
 dofile(MP .. "/src/callbacks.lua")

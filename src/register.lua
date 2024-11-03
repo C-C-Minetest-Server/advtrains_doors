@@ -24,20 +24,20 @@ local logger = _int.logger:sublogger("register")
 
 local queue = {}
 
-if minetest.get_modpath("default") then
+if core.get_modpath("default") then
     queue[#queue+1] = "default:steelblock"
     queue[#queue+1] = "default:copperblock"
     queue[#queue+1] = "default:glass"
     queue[#queue+1] = "default:obsidian_glass"
 end
 
-if minetest.get_modpath("moreblocks") then
+if core.get_modpath("moreblocks") then
     queue[#queue+1] = "moreblocks:iron_glass"
     queue[#queue+1] = "moreblocks:coal_glass"
     queue[#queue+1] = "moreblocks:clean_glass"
 end
 
-if minetest.get_modpath("mcl_core") then
+if core.get_modpath("mcl_core") then
     queue[#queue+1] = "mcl_core:ironblock"
 
     queue[#queue+1] = "mcl_core:glass"
@@ -49,7 +49,7 @@ if minetest.get_modpath("mcl_core") then
     end
 end
 
-if minetest.get_modpath("void_essential") then
+if core.get_modpath("void_essential") then
     queue[#queue+1] = "void_essential:stone"
     queue[#queue+1] = "void_essential:water_source"
     queue[#queue+1] = "void_essential:river_water_source"
@@ -59,7 +59,7 @@ end
 --       (or simply only allow waxed?)
 
 for _, name in ipairs(queue) do
-    if not minetest.registered_nodes[name] then
+    if not core.registered_nodes[name] then
         logger:error(("Node %s loaded in the registeration queue but is not found."):format(
             name
         ))

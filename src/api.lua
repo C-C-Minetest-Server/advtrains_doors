@@ -85,10 +85,10 @@ local double_gate_opened_box = {
 }
 
 local mese, steel
-if minetest.get_modpath("default") then
+if core.get_modpath("default") then
     mese = "default:mese_crystal_fragment"
     steel = "default:steel_ingot"
-elseif minetest.get_modpath("mcl_core") and minetest.get_modpath("mesecons_wires") then
+elseif core.get_modpath("mcl_core") and core.get_modpath("mesecons_wires") then
     mese = "mesecons:redstone"
     steel = "mcl_core:iron_ingot"
 else
@@ -118,7 +118,7 @@ local function prepare_groups(groups)
     return rtn
 end
 
-minetest.register_node("advtrains_doors:platform_screen_upper", {
+core.register_node("advtrains_doors:platform_screen_upper", {
     drawtype = "airlike",
     paramtype = "light",
     drop = "",
@@ -135,22 +135,22 @@ minetest.register_node("advtrains_doors:platform_screen_upper", {
 
 local function screen_on_construct(pos)
     pos.y = pos.y + 1
-    local node = minetest.get_node(pos)
+    local node = core.get_node(pos)
     if node and node.name == "air" then
         node.name = "advtrains_doors:platform_screen_upper"
-        minetest.set_node(pos, node)
+        core.set_node(pos, node)
     end
 end
 
 local function screen_on_destruct(pos)
     pos.y = pos.y + 1
-    local node = minetest.get_node(pos)
+    local node = core.get_node(pos)
     if node and node.name == "advtrains_doors:platform_screen_upper" then
-        minetest.remove_node(pos)
+        core.remove_node(pos)
     end
 end
 
-on_rotate = minetest.global_exists("screwdriver") and screwdriver.rotate_simple or nil
+local on_rotate = core.global_exists("screwdriver") and screwdriver.rotate_simple or nil
 
 local function create_extended_texture(tiles)
     local new_tiles = {}
@@ -165,7 +165,7 @@ local function create_extended_texture(tiles)
 end
 
 function _ad.register_platform_gate(node_name)
-    local node_def = logger:assert(minetest.registered_nodes[node_name],
+    local node_def = logger:assert(core.registered_nodes[node_name],
         "Node " .. node_name .. " not found!")
 
     local description = node_def.short_description or node_def.description or node_name
@@ -185,7 +185,7 @@ function _ad.register_platform_gate(node_name)
     end
 
     -- Closed gate
-    minetest.register_node(":" .. node_name .. "_platform_gate", {
+    core.register_node(":" .. node_name .. "_platform_gate", {
         description = S("@1 Platform Gate", description),
 
         drawtype = "nodebox",
@@ -207,7 +207,7 @@ function _ad.register_platform_gate(node_name)
     })
 
     -- Opened gate - not obtainable
-    minetest.register_node(":" .. node_name .. "_platform_gate_opened", {
+    core.register_node(":" .. node_name .. "_platform_gate_opened", {
         drawtype = "nodebox",
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
@@ -228,7 +228,7 @@ function _ad.register_platform_gate(node_name)
     })
 
     -- Fixed gate - won't open
-    minetest.register_node(":" .. node_name .. "_platform_gate_fixed", {
+    core.register_node(":" .. node_name .. "_platform_gate_fixed", {
         description = S("@1 Platform Gate (Fixed)", description),
 
         drawtype = "nodebox",
@@ -249,7 +249,7 @@ function _ad.register_platform_gate(node_name)
     local extended_tiles = create_extended_texture(tiles)
 
     -- Closed extended gate
-    minetest.register_node(":" .. node_name .. "_platform_gate_extended", {
+    core.register_node(":" .. node_name .. "_platform_gate_extended", {
         description = S("@1 Platform Gate (Extended)", description),
 
         drawtype = "nodebox",
@@ -271,7 +271,7 @@ function _ad.register_platform_gate(node_name)
     })
 
     -- Opened gate - not obtainable
-    minetest.register_node(":" .. node_name .. "_platform_gate_extended_opened", {
+    core.register_node(":" .. node_name .. "_platform_gate_extended_opened", {
         drawtype = "nodebox",
         tiles = extended_tiles,
         use_texture_alpha = node_def.use_texture_alpha,
@@ -292,7 +292,7 @@ function _ad.register_platform_gate(node_name)
     })
 
     -- Fixed gate - won't open
-    minetest.register_node(":" .. node_name .. "_platform_gate_extended_fixed", {
+    core.register_node(":" .. node_name .. "_platform_gate_extended_fixed", {
         description = S("@1 Platform Gate (Extended, Fixed)", description),
 
         drawtype = "nodebox",
@@ -311,7 +311,7 @@ function _ad.register_platform_gate(node_name)
     })
 
     -- Closed screen
-    minetest.register_node(":" .. node_name .. "_platform_screen", {
+    core.register_node(":" .. node_name .. "_platform_screen", {
         description = S("@1 Platform Screen Door", description),
 
         drawtype = "nodebox",
@@ -336,7 +336,7 @@ function _ad.register_platform_gate(node_name)
     })
 
     -- Opened screen
-    minetest.register_node(":" .. node_name .. "_platform_screen_opened", {
+    core.register_node(":" .. node_name .. "_platform_screen_opened", {
         drawtype = "nodebox",
         tiles = tiles,
         use_texture_alpha = node_def.use_texture_alpha,
@@ -363,7 +363,7 @@ function _ad.register_platform_gate(node_name)
 
     if mese and steel then
         -- Crafting recipie for gate
-        minetest.register_craft({
+        core.register_craft({
             output = node_name .. "_platform_gate 4",
             recipe = {
                 { node_name, mese, node_name }
@@ -371,7 +371,7 @@ function _ad.register_platform_gate(node_name)
         })
 
         -- Crafting recipe for fixed
-        minetest.register_craft({
+        core.register_craft({
             output = node_name .. "_platform_gate_fixed 6",
             recipe = {
                 { node_name, steel, node_name }
@@ -379,7 +379,7 @@ function _ad.register_platform_gate(node_name)
         })
 
         -- Crafting recipie for gate extended
-        minetest.register_craft({
+        core.register_craft({
             output = node_name .. "_platform_gate_extended 6",
             recipe = {
                 { "",        node_name, "" },
@@ -388,7 +388,7 @@ function _ad.register_platform_gate(node_name)
         })
 
         -- Crafting recipe for fixed
-        minetest.register_craft({
+        core.register_craft({
             output = node_name .. "_platform_gate_extended_fixed 6",
             recipe = {
                 { "",        node_name, "" },
@@ -398,14 +398,14 @@ function _ad.register_platform_gate(node_name)
     end
 
     -- Crafting recipe for screen
-    minetest.register_craft({
+    core.register_craft({
         type = "shapeless",
         output = node_name .. "_platform_screen",
         recipe = { node_name .. "_platform_gate", node_name .. "_platform_gate" }
     })
 
     -- screen back to recipe
-    minetest.register_craft({
+    core.register_craft({
         type = "shapeless",
         output = node_name .. "_platform_gate 2",
         recipe = { node_name .. "_platform_screen" }

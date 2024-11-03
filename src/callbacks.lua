@@ -18,11 +18,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 
-local minetest, advtrains, math = minetest, advtrains, math
+local minetest, advtrains, math = core, advtrains, math
 local abs, floor, round = math.abs, math.floor, math.round
 
-local _ad = advtrains_doors
-local _int = _ad.internal
+-- local _ad = advtrains_doors
+-- local _int = _ad.internal
 -- local logger = _int.logger:sublogger("callbacks")
 
 local doors_opened_pos = {}
@@ -59,14 +59,14 @@ minetest.register_globalstep(function()
         doors_opened_pos[k] = nil
     end
 
-    for train_id, train in pairs(advtrains.trains) do
+    for _, train in pairs(advtrains.trains) do
         if train.path and train.velocity == 0 and train.door_open and train.door_open ~= 0 then
-            for part_id, wagon_id in ipairs(train.trainparts) do
+            for _, wagon_id in ipairs(train.trainparts) do
                 local wagon_data = advtrains.wagons[wagon_id]
                 if wagon_data then
                     local _, prototype = advtrains.get_wagon_prototype(wagon_data)
                     local door_entry = prototype.door_entry or default_door_entry
-                    for i, ino in ipairs(door_entry) do
+                    for _, ino in ipairs(door_entry) do
                         -- Open doors at where door_entry are
                         -- see: wagon:on_step
                         local index = advtrains.path_get_index_by_offset(train, train.index, -wagon_data.pos_in_train)
@@ -89,7 +89,9 @@ minetest.register_globalstep(function()
                                     local hash = minetest.hash_node_position(platform_pos)
                                     local node = minetest.get_node(platform_pos)
                                     local def = minetest.registered_nodes[node.name]
-                                    if not doors_opened_pos[hash] and def.groups and def.groups.advtrains_doors == 1 then
+                                    if not doors_opened_pos[hash]
+                                        and def.groups
+                                        and def.groups.advtrains_doors == 1 then
                                         if def.groups.advtrains_doors_closed == 1 then
                                             node.name = def._advtrains_doors_counterpart
                                             minetest.swap_node(platform_pos, node)
