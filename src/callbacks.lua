@@ -18,7 +18,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]]
 
-local minetest, advtrains, math = core, advtrains, math
+local core, advtrains, math = core, advtrains, math
 local abs, floor, round = math.abs, math.floor, math.round
 
 -- local _ad = advtrains_doors
@@ -41,7 +41,7 @@ local function path_get_adjacent(train, index)
 end
 
 local total_steps = 0
-minetest.register_globalstep(function()
+core.register_globalstep(function()
     -- Don't run for the first main loop
     if advtrains.mainloop_runcnt <= 0 then
         return
@@ -86,15 +86,15 @@ minetest.register_globalstep(function()
                                     z = round(pos.z + add.z),
                                 }
                                 if advtrains.is_node_loaded(platform_pos) then
-                                    local hash = minetest.hash_node_position(platform_pos)
-                                    local node = minetest.get_node(platform_pos)
-                                    local def = minetest.registered_nodes[node.name]
+                                    local hash = core.hash_node_position(platform_pos)
+                                    local node = core.get_node(platform_pos)
+                                    local def = core.registered_nodes[node.name]
                                     if not doors_opened_pos[hash]
                                         and def.groups
                                         and def.groups.advtrains_doors == 1 then
                                         if def.groups.advtrains_doors_closed == 1 then
                                             node.name = def._advtrains_doors_counterpart
-                                            minetest.swap_node(platform_pos, node)
+                                            core.swap_node(platform_pos, node)
                                         end
                                         doors_opened_pos[hash] = true
                                     end
@@ -108,17 +108,17 @@ minetest.register_globalstep(function()
     end
 end)
 
-minetest.register_abm({
+core.register_abm({
     label = "Close advtrains doors",
     nodenames = { "group:advtrains_doors_opened" },
     interval = 0.5,
     chance = 1,
     catch_up = false,
     action = function(pos, node)
-        local def = minetest.registered_nodes[node.name]
-        if not doors_opened_pos[minetest.hash_node_position(pos)] then
+        local def = core.registered_nodes[node.name]
+        if not doors_opened_pos[core.hash_node_position(pos)] then
             node.name = def._advtrains_doors_counterpart
-            minetest.swap_node(pos, node)
+            core.swap_node(pos, node)
         end
     end,
 })
