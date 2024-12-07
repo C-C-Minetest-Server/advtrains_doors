@@ -108,6 +108,8 @@ core.register_globalstep(function()
     end
 end)
 
+local force_open_list = {}
+
 core.register_abm({
     label = "Close advtrains doors",
     nodenames = { "group:advtrains_doors_opened" },
@@ -116,9 +118,29 @@ core.register_abm({
     catch_up = false,
     action = function(pos, node)
         local def = core.registered_nodes[node.name]
-        if not doors_opened_pos[core.hash_node_position(pos)] then
+        local hash = core.hash_node_position(pos)
+        if force_open_list[hash] then
+            if force_open_list[hash] > os.time() then
+                return
+            end
+            force_open_list[hash] = nil
+        end
+        if not doors_opened_pos[hash] then
             node.name = def._advtrains_doors_counterpart
             core.swap_node(pos, node)
         end
     end,
 })
+
+function advtrains_doors.force_open_door(pos, duration)
+    local node = core.get_node(pos)
+    local def = core.registered_nodes[node.name]
+    if not def or not def.groups then return false end
+    if def.groups.advtrains_doors ~= 1 then return false end
+    if def.groups.advtrains_doors == 1 then
+        node.name = def._advtrains_doors_counterpart
+        core.swap_node(pos, node)
+    end
+    force_open_list[core.hash_node_position(pos)] = os.time() + duration
+    return true
+end

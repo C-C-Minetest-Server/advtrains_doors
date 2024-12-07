@@ -132,6 +132,34 @@ core.register_node("advtrains_doors:platform_screen_upper", {
         not_blocking_trains = 1
     },
 })
+local advtrains_allow_build_to_owner = core.settings:get_bool("advtrains_allow_build_to_owner")
+local function is_protected_advt(pos, name)
+    local privs = core.get_player_privs(name)
+    if privs.protection_bypass then return true end
+    if advtrains_allow_build_to_owner and core.is_protected(pos) and not core.is_protected(pos, name) then
+        return true
+    end
+    if privs.track_builder then return true end
+    return false
+end
+
+local force_open_time = tonumber(core.settings:get("advtrains_doors.force_open_time")) or 4
+local function door_on_rightclick(pos, node, player, itemstack, pointed_thing)
+    if not player:is_player() then return itemstack end
+    if not pointed_thing or pointed_thing.type ~= "node" then return itemstack end
+    local facedir = core.facedir_to_dir(node.param2)
+
+    if not vector.equals(pointed_thing.above, vector.subtract(pos, facedir)) then
+        local pname = player:get_player_name()
+        if core.is_protected(pos, pname) then
+            core.chat_send_player(pname, S("You're not allowed to forcefully open platform dooors!"))
+            return itemstack
+        end
+    end
+
+    advtrains_doors.force_open_door(pos, force_open_time)
+    return itemstack
+end
 
 local function screen_on_construct(pos)
     pos.y = pos.y + 1
@@ -197,6 +225,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_closed_box,
         collision_box = gate_closed_extended_box,
         on_rotate = on_rotate,
+        on_rightclick = door_on_rightclick,
 
         groups = groups_for_gate_closed,
         sounds = node_def.sounds,
@@ -218,6 +247,7 @@ function _ad.register_platform_gate(node_name)
         selection_box = gate_opened_box,
         collision_box = gate_opened_extended_box,
         on_rotate = on_rotate,
+        on_rightclick = door_on_rightclick,
 
         groups = groups_for_gate_opened,
         sounds = node_def.sounds,
@@ -263,6 +293,7 @@ function _ad.register_platform_gate(node_name)
         node_box = gate_closed_extended_box,
         selection_box = gate_closed_extended_box,
         on_rotate = on_rotate,
+        on_rightclick = door_on_rightclick,
 
         groups = groups_for_gate_closed,
         sounds = node_def.sounds,
@@ -283,6 +314,7 @@ function _ad.register_platform_gate(node_name)
         node_box = gate_opened_extended_box,
         selection_box = gate_opened_extended_box,
         on_rotate = on_rotate,
+        on_rightclick = door_on_rightclick,
 
         groups = groups_for_gate_opened,
         sounds = node_def.sounds,
@@ -325,6 +357,7 @@ function _ad.register_platform_gate(node_name)
         node_box = double_gate_closed_box,
         selection_box = double_gate_closed_box,
         on_rotate = on_rotate,
+        on_rightclick = door_on_rightclick,
 
         groups = groups_for_gate_closed,
         sounds = node_def.sounds,
@@ -348,6 +381,7 @@ function _ad.register_platform_gate(node_name)
         node_box = double_gate_opened_box,
         selection_box = double_gate_opened_box,
         on_rotate = on_rotate,
+        on_rightclick = door_on_rightclick,
 
         groups = groups_for_gate_opened,
         sounds = node_def.sounds,

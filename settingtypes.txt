@@ -1,0 +1,3 @@
+#   How long platform doors are opened if opened forcefully in seconds.
+#   (i.e. from the inside by anyone or from the outside by track builders.)
+advtrains_doors.force_open_time (Force open time) int 4
