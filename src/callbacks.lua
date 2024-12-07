@@ -137,7 +137,7 @@ function advtrains_doors.force_open_door(pos, duration)
     local def = core.registered_nodes[node.name]
     if not def or not def.groups then return false end
     if def.groups.advtrains_doors ~= 1 then return false end
-    if def.groups.advtrains_doors == 1 then
+    if def.groups.advtrains_doors_closed == 1 then
         node.name = def._advtrains_doors_counterpart
         core.swap_node(pos, node)
     end
