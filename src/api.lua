@@ -132,16 +132,6 @@ core.register_node("advtrains_doors:platform_screen_upper", {
         not_blocking_trains = 1
     },
 })
-local advtrains_allow_build_to_owner = core.settings:get_bool("advtrains_allow_build_to_owner")
-local function is_protected_advt(pos, name)
-    local privs = core.get_player_privs(name)
-    if privs.protection_bypass then return true end
-    if advtrains_allow_build_to_owner and core.is_protected(pos) and not core.is_protected(pos, name) then
-        return true
-    end
-    if privs.track_builder then return true end
-    return false
-end
 
 local force_open_time = tonumber(core.settings:get("advtrains_doors.force_open_time")) or 4
 local function door_on_rightclick(pos, node, player, itemstack, pointed_thing)
