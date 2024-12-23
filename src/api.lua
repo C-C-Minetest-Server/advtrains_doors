@@ -501,7 +501,6 @@ function _ad.register_platform_gate(node_name)
         "platform_gate",
         "platform_gate_downward",
         "platform_gate_extended",
-        "platform_screen",
     }) do
         local normal_name = node_name .. "_" .. door_group
         local fixed_name = node_name .. "_" .. door_group .. "_fixed"
@@ -517,6 +516,21 @@ function _ad.register_platform_gate(node_name)
         core.register_craft({
             output = node_name .. "_" .. door_group .. "_right_fixed",
             recipe = { { normal_name, fixed_name } }
+        })
+    end
+
+    do
+        local normal_name = node_name .. "_platform_screen"
+        local fixed_name = node_name .. "_platform_gate_fixed"
+
+        core.register_craft({
+            output = node_name .. "_platform_screen_left_fixed",
+            recipe = { { fixed_name, normal_name }, { fixed_name, "" } }
+        })
+
+        core.register_craft({
+            output = node_name .. "_platform_screen_right_fixed",
+            recipe = { { normal_name, fixed_name }, { "", fixed_name } }
         })
     end
 end
