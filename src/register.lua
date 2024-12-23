@@ -19,8 +19,8 @@
 ]]
 
 local _ad = advtrains_doors
-local _int = _ad.internal
-local logger = _int.logger:sublogger("register")
+-- local _int = _ad.internal
+-- local logger = _int.logger:sublogger("register")
 
 local queue = {}
 
