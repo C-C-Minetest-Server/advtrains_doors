@@ -450,6 +450,30 @@ function _ad.register_platform_gate(node_name)
                 { node_name, steel,     node_name }
             }
         })
+
+        core.register_craft({
+            output = node_name .. "_platform_gate_downward",
+            recipe = {
+                { node_name .. "_platform_gate" },
+                { mese },
+            }
+        })
+
+        core.register_craft({
+            output = node_name .. "_platform_gate_downward_left_fixed",
+            recipe = {
+                { node_name .. "_platform_gate_left_fixed" },
+                { mese },
+            }
+        })
+
+        core.register_craft({
+            output = node_name .. "_platform_gate_downward_right_fixed",
+            recipe = {
+                { node_name .. "_platform_gate_right_fixed" },
+                { mese },
+            }
+        })
     end
 
     -- Crafting recipe for screen
@@ -475,17 +499,24 @@ function _ad.register_platform_gate(node_name)
 
     for _, door_group in ipairs({
         "platform_gate",
+        "platform_gate_downward",
         "platform_gate_extended",
         "platform_screen",
     }) do
+        local normal_name = node_name .. "_" .. door_group
+        local fixed_name = node_name .. "_" .. door_group .. "_fixed"
+        if door_group == "platform_gate_downward" then
+            fixed_name = node_name .. "_platform_gate_fixed"
+        end
+
         core.register_craft({
             output = node_name .. "_" .. door_group .. "_left_fixed",
-            recipe = { { node_name .. "_" .. door_group .. "_fixed", node_name .. "_" .. door_group } }
+            recipe = { { fixed_name, normal_name } }
         })
 
         core.register_craft({
             output = node_name .. "_" .. door_group .. "_right_fixed",
-            recipe = { { node_name .. "_" .. door_group, node_name .. "_" .. door_group .. "_fixed" } }
+            recipe = { { normal_name, fixed_name } }
         })
     end
 end
