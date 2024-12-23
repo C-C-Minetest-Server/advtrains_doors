@@ -3,3 +3,16 @@
 ##[ src/api.lua ]##
 @1 Platform Gate=@1半高式月台門
 @1 Platform Gate (Fixed)=@1半高式月台門（不打開）
+@1 Platform Gate (Left-fixed)=@1半高式月台門（左邊不打開）
+@1 Platform Gate (Right-fixed)=@1半高式月台門（右邊不打開）
+@1 Platform Gate (Move downward)=@1半高式月台門（向下打開）
+@1 Platform Gate (Move downward, Left-fixed)=@1半高式月台門（向下打開，左邊不打開）
+@1 Platform Gate (Move downward, Right-fixed)=@1半高式月台門（向下打開，右邊不打開）
+@1 Extended Platform Gate=@1加高月台門
+@1 Extended Platform Gate (Fixed)=@1加高月台門（不打開）
+@1 Extended Platform Gate (Left-fixed)=@1加高月台門（左邊不打開）
+@1 Extended Platform Gate (Right-fixed)=@1加高月台門（右邊不打開）
+@1 Platform Screen Door=@1月台幕門
+@1 Platform Screen Door (Left-fixed)=@1月台幕門（左邊不打開）
+@1 Platform Screen Door (Right-fixed)=@1月台幕門（右邊不打開）
+You're not allowed to forcefully open platform dooors!=禁止強制開啓月台門！

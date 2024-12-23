@@ -3,3 +3,16 @@
 ##[ src/api.lua ]##
 @1 Platform Gate=
 @1 Platform Gate (Fixed)=
+@1 Platform Gate (Left-fixed)=
+@1 Platform Gate (Right-fixed)=
+@1 Platform Gate (Move downward)=
+@1 Platform Gate (Move downward, Left-fixed)=
+@1 Platform Gate (Move downward, Right-fixed)=
+@1 Extended Platform Gate=
+@1 Extended Platform Gate (Fixed)=
+@1 Extended Platform Gate (Left-fixed)=
+@1 Extended Platform Gate (Right-fixed)=
+@1 Platform Screen Door=
+@1 Platform Screen Door (Left-fixed)=
+@1 Platform Screen Door (Right-fixed)=
+You're not allowed to forcefully open platform dooors!=

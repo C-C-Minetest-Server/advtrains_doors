@@ -163,7 +163,7 @@ do
     }
 
     door_variants.platform_gate_extended = {
-        description = NS("@1 Platform Gate (Extended)"),
+        description = NS("@1 Extended Platform Gate"),
         node_box = door_variants.platform_gate.collision_box,
         counterpart = "platform_gate_extended_opened",
         state = "closed",
@@ -176,12 +176,12 @@ do
         extended = true,
     }
     door_variants.platform_gate_extended_fixed = {
-        description = NS("@1 Platform Gate (Extended, Fixed)"),
+        description = NS("@1 Extended Platform Gate (Fixed)"),
         node_box = door_variants.platform_gate_fixed.collision_box,
         extended = true,
     }
     door_variants.platform_gate_extended_left_fixed = {
-        description = NS("@1 Platform Gate (Extended. Left-fixed)"),
+        description = NS("@1 Extended Platform Gate (Left-fixed)"),
         node_box = door_variants.platform_gate_left_fixed.collision_box,
         counterpart = "platform_gate_extended_left_fixed_opened",
         state = "closed",
@@ -194,7 +194,7 @@ do
         extended = true,
     }
     door_variants.platform_gate_extended_right_fixed = {
-        description = NS("@1 Platform Gate (Extended, Right-fixed)"),
+        description = NS("@1 Extended Platform Gate (Right-fixed)"),
         node_box = door_variants.platform_gate_right_fixed.collision_box,
         counterpart = "platform_gate_extended_right_fixed_opened",
         state = "closed",
