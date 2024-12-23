@@ -35,6 +35,17 @@ queue[#queue + 1] = "moreblocks:iron_glass"
 queue[#queue + 1] = "moreblocks:coal_glass"
 queue[#queue + 1] = "moreblocks:clean_glass"
 
+-- Baked Clay
+for _, color in ipairs({
+    "natural", "white", "grey", "black", "red", "yellow", "green", "cyan", "blue", "magenta",
+    "orange", "violet", "brown", "pink", "dark_grey", "dark_green",
+}) do
+    queue[#queue + 1] = "bakedclay:" .. color
+    if color ~= "natural" then
+        queue[#queue + 1] = "bakedclay:terracotta_" .. color
+    end
+end
+
 -- Basic Materials
 queue[#queue + 1] = "basic_materials:concrete_block"
 
@@ -47,15 +58,13 @@ for _, color in ipairs({
 }) do
     queue[#queue + 1] = "mcl_core:glass_" .. color
 end
+-- TODO: Implement copper block after dealing with oxidation
+--       (or simply only allow waxed?)
 
 -- Void
 queue[#queue + 1] = "void_essential:stone"
 queue[#queue + 1] = "void_essential:water_source"
 queue[#queue + 1] = "void_essential:river_water_source"
-
-
--- TODO: Implement copper block after dealing with oxidation
---       (or simply only allow waxed?)
 
 for _, name in ipairs(queue) do
     if core.registered_nodes[name] then
