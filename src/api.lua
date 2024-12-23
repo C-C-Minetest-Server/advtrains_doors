@@ -23,66 +23,179 @@ local _int = _ad.internal
 local logger = _int.logger:sublogger("api")
 
 local S = _int.S
+local NS = function(s) return s end
 
--- These are from door shutters of cottages
-local gate_closed_box = {
-    type = "fixed",
-    fixed = {
-        { -0.5, -0.5, 7 / 16 - 1 / 64, -0.05, 0.5, 0.5 - 1 / 64 },
-        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5,   0.5, 0.5 - 1 / 64 },
-    },
-}
-local gate_opened_box = {
-    type = "fixed",
-    fixed = {
-        { -0.90, -0.5, 7 / 16 - 1 / 64, -0.45, 0.5, 0.5 - 1 / 64 },
-        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9,   0.5, 0.5 - 1 / 64 },
-    },
-}
-local gate_fixed_box = {
-    type = "fixed",
-    fixed = {
+local door_variants = {}
+
+do
+    local function add_table(src, scl)
+        local rtn = {}
+        for i, v in ipairs(scl) do
+            rtn[i] = src[i] + v
+        end
+        return rtn
+    end
+
+    local function add_table_array(srcs, scl)
+        local rtn = {}
+        for i, src in ipairs(srcs) do
+            rtn[i] = add_table(src, scl)
+        end
+        return rtn
+    end
+
+    local gate_closed_boxes = {
+        { -0.5, -0.5, 7 / 16 - 1 / 64, -0.05, 0.5, 0.5 - 1 / 64 }, -- left
+        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5,   0.5, 0.5 - 1 / 64 }, -- right
+    }
+
+    local gate_fixed_boxes = {
         { -0.5, -0.5, 0.4, 0.5, 0.5, 0.5 },
-    },
-}
+    }
 
--- Modified from above
-local gate_closed_extended_box = {
-    type = "fixed",
-    fixed = {
-        { -0.5, -0.5, 7 / 16 - 1 / 64, -0.05, 13 / 16, 0.5 - 1 / 64 },
-        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5,   13 / 16, 0.5 - 1 / 64 },
-    },
-}
-local gate_opened_extended_box = {
-    type = "fixed",
-    fixed = {
-        { -0.90, -0.5, 7 / 16 - 1 / 64, -0.45, 13 / 16, 0.5 - 1 / 64 },
-        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9,   13 / 16, 0.5 - 1 / 64 },
-    },
-}
-local gate_fixed_extended_box = {
-    type = "fixed",
-    fixed = {
-        { -0.5, -0.5, 0.4, 0.5, 13 / 16, 0.5 },
-    },
-}
+    for variant, data in pairs({
+        platform_gate = {
+            description = NS("@1 Platform Gate"),
+            node_box = gate_closed_boxes,
+            counterpart = "platform_gate_opened",
+            state = "closed",
+        },
+        platform_gate_opened = {
+            node_box = {
+                add_table(gate_closed_boxes[1], { -0.4, 0, 0, -0.4, 0, 0 }),
+                add_table(gate_closed_boxes[2], { 0.4, 0, 0, 0.4, 0, 0 }),
+            },
+            counterpart = "platform_gate",
+            state = "opened",
+        },
+        platform_gate_fixed = {
+            description = NS("@1 Platform Gate (Fixed)"),
+            node_box = gate_fixed_boxes,
+        },
+        platform_gate_left_fixed = {
+            description = NS("@1 Platform Gate (Left-fixed)"),
+            node_box = {
+                add_table(gate_fixed_boxes[1], { 0, 0, 0, -0.5, 0, 0 }),
+                add_table(gate_closed_boxes[1], { 0.5, 0, 0, 0.5, 0, 0 }),
+            },
+            counterpart = "platform_gate_left_fixed_opened",
+            state = "closed",
+        },
+        platform_gate_left_fixed_opened = {
+            node_box = {
+                add_table(gate_fixed_boxes[1], { 0, 0, 0, -0.5, 0, 0 }),
+                add_table(gate_closed_boxes[1], { 0.1, 0, 0, 0.1, 0, 0 }),
+            },
+            counterpart = "platform_gate_left_fixed",
+            state = "opened",
+        },
+        platform_gate_right_fixed = {
+            description = NS("@1 Platform Gate (Right-fixed)"),
+            node_box = {
+                add_table(gate_fixed_boxes[1], { 0.5, 0, 0, 0, 0, 0 }),
+                add_table(gate_closed_boxes[2], { -0.5, 0, 0, -0.5, 0, 0 }),
+            },
+            counterpart = "platform_gate_right_fixed_opened",
+            state = "closed",
+        },
+        platform_gate_right_fixed_opened = {
+            node_box = {
+                add_table(gate_fixed_boxes[1], { 0.5, 0, 0, 0, 0, 0 }),
+                add_table(gate_closed_boxes[2], { -0.1, 0, 0, -0.1, 0, 0 }),
+            },
+            counterpart = "platform_gate_right_fixed",
+            state = "opened",
+        },
+    }) do
+        data.collision_box = add_table_array(data.node_box, { 0, 0, 0, 0, 5 / 16, 0 })
+        door_variants[variant] = data
+    end
 
--- Modified from above
-local double_gate_closed_box = {
-    type = "fixed",
-    fixed = {
-        { -0.5, -0.5, 7 / 16 - 1 / 64, -0.05, 1.5, 0.5 - 1 / 64 },
-        { 0.05, -0.5, 7 / 16 - 1 / 64, 0.5,   1.5, 0.5 - 1 / 64 },
-    },
-}
-local double_gate_opened_box = {
-    type = "fixed",
-    fixed = {
-        { -0.90, -0.5, 7 / 16 - 1 / 64, -0.45, 1.5, 0.5 - 1 / 64 },
-        { 0.45,  -0.5, 7 / 16 - 1 / 64, 0.9,   1.5, 0.5 - 1 / 64 },
-    },
-}
+    door_variants.platform_gate_extended = {
+        description = NS("@1 Platform Gate (Extended)"),
+        node_box = door_variants.platform_gate.collision_box,
+        counterpart = "platform_gate_extended_opened",
+        state = "closed",
+        extended = true,
+    }
+    door_variants.platform_gate_extended_opened = {
+        node_box = door_variants.platform_gate_opened.collision_box,
+        counterpart = "platform_gate_extended",
+        state = "opened",
+        extended = true,
+    }
+    door_variants.platform_gate_extended_fixed = {
+        description = NS("@1 Platform Gate (Extended, Fixed)"),
+        node_box = door_variants.platform_gate_fixed.collision_box,
+        extended = true,
+    }
+    door_variants.platform_gate_extended_left_fixed = {
+        description = NS("@1 Platform Gate (Extended. Left-fixed)"),
+        node_box = door_variants.platform_gate_left_fixed.collision_box,
+        counterpart = "platform_gate_extended_left_fixed_opened",
+        state = "closed",
+        extended = true,
+    }
+    door_variants.platform_gate_extended_left_fixed_opened = {
+        node_box = door_variants.platform_gate_left_fixed_opened.collision_box,
+        counterpart = "platform_gate_extended_left_fixed",
+        state = "opened",
+        extended = true,
+    }
+    door_variants.platform_gate_extended_right_fixed = {
+        description = NS("@1 Platform Gate (Extended, Right-fixed)"),
+        node_box = door_variants.platform_gate_right_fixed.collision_box,
+        counterpart = "platform_gate_extended_right_fixed_opened",
+        state = "closed",
+        extended = true,
+    }
+    door_variants.platform_gate_extended_right_fixed_opened = {
+        node_box = door_variants.platform_gate_right_fixed_opened.collision_box,
+        counterpart = "platform_gate_extended_right_fixed",
+        state = "opened",
+        extended = true,
+    }
+
+    door_variants.platform_screen = {
+        description = NS("@1 Platform Screen Door"),
+        node_box = add_table_array(gate_closed_boxes, { 0, 0, 0, 0, 1, 0 }),
+        counterpart = "platform_screen_opened",
+        state = "closed",
+        screen = true,
+    }
+    door_variants.platform_screen_opened = {
+        node_box = add_table_array(door_variants.platform_gate_fixed.node_box, { 0, 0, 0, 0, 1, 0 }),
+        counterpart = "platform_screen",
+        state = "opened",
+        screen = true,
+    }
+    door_variants.platform_screen_left_fixed = {
+        description = NS("@1 Platform Screen Door (Left-fixed)"),
+        node_box = add_table_array(door_variants.platform_gate_left_fixed.node_box, { 0, 0, 0, 0, 1, 0 }),
+        counterpart = "platform_screen_left_fixed_opened",
+        state = "closed",
+        screen = true,
+    }
+    door_variants.platform_screen_left_fixed_opened = {
+        node_box = add_table_array(door_variants.platform_gate_left_fixed_opened.node_box, { 0, 0, 0, 0, 1, 0 }),
+        counterpart = "platform_screen_left_fixed",
+        state = "opened",
+        screen = true,
+    }
+    door_variants.platform_screen_right_fixed = {
+        description = NS("@1 Platform Screen Door (Right-fixed)"),
+        node_box = add_table_array(door_variants.platform_gate_right_fixed.node_box, { 0, 0, 0, 0, 1, 0 }),
+        counterpart = "platform_screen_right_fixed_opened",
+        state = "closed",
+        screen = true,
+    }
+    door_variants.platform_screen_right_fixed_opened = {
+        node_box = add_table_array(door_variants.platform_gate_right_fixed_opened.node_box, { 0, 0, 0, 0, 1, 0 }),
+        counterpart = "platform_screen_right_fixed",
+        state = "opened",
+        screen = true,
+    }
+end
 
 local mese, steel
 if core.get_modpath("default") then
@@ -201,192 +314,56 @@ function _ad.register_platform_gate(node_name)
     if node_def.drawtype == "glasslike_framed_optional" then
         tiles = { tiles[1] }
     end
-
-    -- Closed gate
-    core.register_node(":" .. node_name .. "_platform_gate", {
-        description = S("@1 Platform Gate", description),
-
-        drawtype = "nodebox",
-        tiles = tiles,
-        use_texture_alpha = node_def.use_texture_alpha,
-        paramtype = "light",
-        paramtype2 = "facedir",
-        node_box = gate_closed_box,
-        selection_box = gate_closed_box,
-        collision_box = gate_closed_extended_box,
-        on_rotate = on_rotate,
-        on_rightclick = door_on_rightclick,
-
-        groups = groups_for_gate_closed,
-        sounds = node_def.sounds,
-        sunlight_propagates = true,
-        is_ground_content = false,
-
-        _advtrains_doors_state = "closed",
-        _advtrains_doors_counterpart = node_name .. "_platform_gate_opened",
-    })
-
-    -- Opened gate - not obtainable
-    core.register_node(":" .. node_name .. "_platform_gate_opened", {
-        drawtype = "nodebox",
-        tiles = tiles,
-        use_texture_alpha = node_def.use_texture_alpha,
-        paramtype = "light",
-        paramtype2 = "facedir",
-        node_box = gate_opened_box,
-        selection_box = gate_opened_box,
-        collision_box = gate_opened_extended_box,
-        on_rotate = on_rotate,
-        on_rightclick = door_on_rightclick,
-
-        groups = groups_for_gate_opened,
-        sounds = node_def.sounds,
-        sunlight_propagates = true,
-        is_ground_content = false,
-        drop = node_name .. "_platform_gate",
-
-        _advtrains_doors_state = "opened",
-        _advtrains_doors_counterpart = node_name .. "_platform_gate",
-    })
-
-    -- Fixed gate - won't open
-    core.register_node(":" .. node_name .. "_platform_gate_fixed", {
-        description = S("@1 Platform Gate (Fixed)", description),
-
-        drawtype = "nodebox",
-        tiles = tiles,
-        use_texture_alpha = node_def.use_texture_alpha,
-        paramtype = "light",
-        paramtype2 = "facedir",
-        node_box = gate_fixed_box,
-        selection_box = gate_fixed_box,
-        collision_box = gate_fixed_extended_box,
-        on_rotate = on_rotate,
-
-        groups = groups, -- NO advtrains_doors
-        sounds = node_def.sounds,
-        sunlight_propagates = true,
-        is_ground_content = false,
-    })
-
     local extended_tiles = create_extended_texture(tiles)
 
-    -- Closed extended gate
-    core.register_node(":" .. node_name .. "_platform_gate_extended", {
-        description = S("@1 Platform Gate (Extended)", description),
+    for variant, data in pairs(door_variants) do
+        local node_box = {
+            type = "fixed",
+            fixed = data.node_box,
+        }
+        local collision_box = data.collision_box and {
+            type = "fixed",
+            fixed = data.collision_box,
+        } or node_box
+        local counterpart = data.counterpart
 
-        drawtype = "nodebox",
-        tiles = extended_tiles,
-        use_texture_alpha = node_def.use_texture_alpha,
-        paramtype = "light",
-        paramtype2 = "facedir",
-        node_box = gate_closed_extended_box,
-        selection_box = gate_closed_extended_box,
-        on_rotate = on_rotate,
-        on_rightclick = door_on_rightclick,
+        local drop = nil
+        local groups_used = groups
+        if data.state == "closed" then
+            groups_used = groups_for_gate_closed
+        elseif data.state == "opened" then
+            groups_used = groups_for_gate_opened
+            drop = node_name .. "_" .. counterpart
+        end
 
-        groups = groups_for_gate_closed,
-        sounds = node_def.sounds,
-        sunlight_propagates = true,
-        is_ground_content = false,
+        core.register_node(":" .. node_name .. "_" .. variant, {
+            description = data.description and S(data.description, description) or nil,
 
-        _advtrains_doors_state = "closed",
-        _advtrains_doors_counterpart = node_name .. "_platform_gate_extended_opened",
-    })
+            drawtype = "nodebox",
+            tiles = data.extended and extended_tiles or tiles,
+            use_texture_alpha = node_def.use_texture_alpha,
+            paramtype = "light",
+            paramtype2 = "facedir",
+            node_box = node_box,
+            selection_box = node_box,
+            collision_box = collision_box,
+            on_rotate = on_rotate,
+            on_rightclick = door_on_rightclick,
 
-    -- Opened gate - not obtainable
-    core.register_node(":" .. node_name .. "_platform_gate_extended_opened", {
-        drawtype = "nodebox",
-        tiles = extended_tiles,
-        use_texture_alpha = node_def.use_texture_alpha,
-        paramtype = "light",
-        paramtype2 = "facedir",
-        node_box = gate_opened_extended_box,
-        selection_box = gate_opened_extended_box,
-        on_rotate = on_rotate,
-        on_rightclick = door_on_rightclick,
+            groups = groups_used,
+            sounds = node_def.sounds,
+            sunlight_propagates = true,
+            is_ground_content = false,
+            drop = drop,
 
-        groups = groups_for_gate_opened,
-        sounds = node_def.sounds,
-        sunlight_propagates = true,
-        is_ground_content = false,
-        drop = node_name .. "_platform_gate_extended",
+            on_construct = data.screen and screen_on_construct or nil,
+            on_destruct = data.screen and screen_on_destruct or nil,
 
-        _advtrains_doors_state = "opened",
-        _advtrains_doors_counterpart = node_name .. "_platform_gate_extended",
-    })
 
-    -- Fixed gate - won't open
-    core.register_node(":" .. node_name .. "_platform_gate_extended_fixed", {
-        description = S("@1 Platform Gate (Extended, Fixed)", description),
-
-        drawtype = "nodebox",
-        tiles = extended_tiles,
-        use_texture_alpha = node_def.use_texture_alpha,
-        paramtype = "light",
-        paramtype2 = "facedir",
-        node_box = gate_fixed_extended_box,
-        selection_box = gate_fixed_extended_box,
-        on_rotate = on_rotate,
-
-        groups = groups, -- NO advtrains_doors
-        sounds = node_def.sounds,
-        sunlight_propagates = true,
-        is_ground_content = false,
-    })
-
-    -- Closed screen
-    core.register_node(":" .. node_name .. "_platform_screen", {
-        description = S("@1 Platform Screen Door", description),
-
-        drawtype = "nodebox",
-        tiles = tiles,
-        use_texture_alpha = node_def.use_texture_alpha,
-        paramtype = "light",
-        paramtype2 = "facedir",
-        node_box = double_gate_closed_box,
-        selection_box = double_gate_closed_box,
-        on_rotate = on_rotate,
-        on_rightclick = door_on_rightclick,
-
-        groups = groups_for_gate_closed,
-        sounds = node_def.sounds,
-        sunlight_propagates = true,
-        is_ground_content = false,
-
-        _advtrains_doors_state = "closed",
-        _advtrains_doors_counterpart = node_name .. "_platform_screen_opened",
-
-        on_construct = screen_on_construct,
-        on_destruct = screen_on_destruct,
-    })
-
-    -- Opened screen
-    core.register_node(":" .. node_name .. "_platform_screen_opened", {
-        drawtype = "nodebox",
-        tiles = tiles,
-        use_texture_alpha = node_def.use_texture_alpha,
-        paramtype = "light",
-        paramtype2 = "facedir",
-        node_box = double_gate_opened_box,
-        selection_box = double_gate_opened_box,
-        on_rotate = on_rotate,
-        on_rightclick = door_on_rightclick,
-
-        groups = groups_for_gate_opened,
-        sounds = node_def.sounds,
-        sunlight_propagates = true,
-        is_ground_content = false,
-        drop = node_name .. "_platform_screen",
-
-        _advtrains_doors_state = "opened",
-        _advtrains_doors_counterpart = node_name .. "_platform_screen",
-
-        on_construct = screen_on_construct,
-        on_destruct = screen_on_destruct,
-    })
-
-    -- fixed screen (just use two fixed gates!)
+            _advtrains_doors_state = data.state,
+            _advtrains_doors_counterpart = counterpart and (node_name .. "_" .. counterpart) or nil,
+        })
+    end
 
     if mese and steel then
         -- Crafting recipie for gate
@@ -425,16 +402,39 @@ function _ad.register_platform_gate(node_name)
     end
 
     -- Crafting recipe for screen
-    core.register_craft({
-        type = "shapeless",
-        output = node_name .. "_platform_screen",
-        recipe = { node_name .. "_platform_gate", node_name .. "_platform_gate" }
-    })
+    for _, suffix in ipairs({
+        "",
+        "_left_fixed",
+        "_right_fixed",
+    }) do
+        core.register_craft({
+            type = "shapeless",
+            output = node_name .. "_platform_screen" .. suffix,
+            recipe = { node_name .. "_platform_gate" .. suffix, node_name .. "_platform_gate" .. suffix }
+        })
 
-    -- screen back to recipe
-    core.register_craft({
-        type = "shapeless",
-        output = node_name .. "_platform_gate 2",
-        recipe = { node_name .. "_platform_screen" }
-    })
+        core.register_craft({
+            type = "shapeless",
+            output = node_name .. "_platform_gate" .. suffix .. " 2",
+            recipe = { node_name .. "_platform_screen" .. suffix }
+        })
+    end
+
+    -- Crafting recipe for left or right fixed
+
+    for _, door_group in ipairs({
+        "platform_gate",
+        "platform_gate_extended",
+        "platform_screen",
+    }) do
+        core.register_craft({
+            output = node_name .. "_" .. door_group .. "_left_fixed",
+            recipe = { { node_name .. "_" .. door_group .. "_fixed", node_name .. "_" .. door_group } }
+        })
+
+        core.register_craft({
+            output = node_name .. "_" .. door_group .. "_right_fixed",
+            recipe = { { node_name .. "_" .. door_group, node_name .. "_" .. door_group .. "_fixed" } }
+        })
+    end
 end
