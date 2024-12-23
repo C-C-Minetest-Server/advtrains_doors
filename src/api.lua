@@ -111,6 +111,57 @@ do
         door_variants[variant] = data
     end
 
+    door_variants.platform_gate_downward = {
+        description = NS("@1 Platform Gate (Move downward)"),
+        node_box = {
+            { -0.5, -0.5, 7 / 16 - 1 / 64, 0.5, 0.5, 0.5 - 1 / 64 },
+        },
+        collision_box = door_variants.platform_gate.collision_box,
+        counterpart = "platform_gate_downward_opened",
+        state = "closed",
+    }
+    door_variants.platform_gate_downward_opened = {
+        node_box = add_table_array(door_variants.platform_gate_downward.node_box, { 0, -15 / 16, 0, 0, -15 / 16, 0 }),
+        counterpart = "platform_gate_downward",
+        state = "opened",
+    }
+    door_variants.platform_gate_downward_left_fixed = {
+        description = NS("@1 Platform Gate (Move downward, Left-fixed)"),
+        node_box = {
+            add_table(gate_fixed_boxes[1], { 0, 0, 0, -0.5, 0, 0 }),
+            { 0, -0.5, 7 / 16 - 1 / 64, 0.5, 0.5, 0.5 - 1 / 64 },
+        },
+        collision_box = door_variants.platform_gate.collision_box,
+        counterpart = "platform_gate_downward_left_fixed_opened",
+        state = "closed",
+    }
+    door_variants.platform_gate_downward_left_fixed_opened = {
+        node_box = {
+            add_table(gate_fixed_boxes[1], { 0, 0, 0, -0.5, 0, 0 }),
+            add_table(door_variants.platform_gate_downward_left_fixed.node_box[2], { 0, -15 / 16, 0, 0, -15 / 16, 0 }),
+        },
+        counterpart = "platform_gate_downward_left_fixed",
+        state = "opened",
+    }
+    door_variants.platform_gate_downward_right_fixed = {
+        description = NS("@1 Platform Gate (Move downward, Right-fixed)"),
+        node_box = {
+            add_table(gate_fixed_boxes[1], { 0.5, 0, 0, 0, 0, 0 }),
+            { -0.5, -0.5, 7 / 16 - 1 / 64, 0, 0.5, 0.5 - 1 / 64 },
+        },
+        collision_box = door_variants.platform_gate.collision_box,
+        counterpart = "platform_gate_downward_right_fixed_opened",
+        state = "closed",
+    }
+    door_variants.platform_gate_downward_right_fixed_opened = {
+        node_box = {
+            add_table(gate_fixed_boxes[1], { 0.5, 0, 0, 0, 0, 0 }),
+            add_table(door_variants.platform_gate_downward_right_fixed.node_box[2], { 0, -15 / 16, 0, 0, -15 / 16, 0 }),
+        },
+        counterpart = "platform_gate_downward_right_fixed",
+        state = "opened",
+    }
+
     door_variants.platform_gate_extended = {
         description = NS("@1 Platform Gate (Extended)"),
         node_box = door_variants.platform_gate.collision_box,
