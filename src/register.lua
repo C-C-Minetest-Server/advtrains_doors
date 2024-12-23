@@ -24,45 +24,41 @@ local logger = _int.logger:sublogger("register")
 
 local queue = {}
 
-if core.get_modpath("default") then
-    queue[#queue + 1] = "default:steelblock"
-    queue[#queue + 1] = "default:copperblock"
-    queue[#queue + 1] = "default:glass"
-    queue[#queue + 1] = "default:obsidian_glass"
+-- Minetest Game
+queue[#queue + 1] = "default:steelblock"
+queue[#queue + 1] = "default:copperblock"
+queue[#queue + 1] = "default:glass"
+queue[#queue + 1] = "default:obsidian_glass"
+
+-- Moreblocks
+queue[#queue + 1] = "moreblocks:iron_glass"
+queue[#queue + 1] = "moreblocks:coal_glass"
+queue[#queue + 1] = "moreblocks:clean_glass"
+
+-- Basic Materials
+queue[#queue + 1] = "basic_materials:concrete_block"
+
+-- VoxelLibre
+queue[#queue + 1] = "mcl_core:ironblock"
+queue[#queue + 1] = "mcl_core:glass"
+for _, color in ipairs({
+    "red", "green", "blue", "light_blue", "black", "white", "yellow", "brown", "orange", "pink",
+    "gray", "lime", "silver", "magenta", "purple", "cyan",
+}) do
+    queue[#queue + 1] = "mcl_core:glass_" .. color
 end
 
-if core.get_modpath("moreblocks") then
-    queue[#queue + 1] = "moreblocks:iron_glass"
-    queue[#queue + 1] = "moreblocks:coal_glass"
-    queue[#queue + 1] = "moreblocks:clean_glass"
-end
+-- Void
+queue[#queue + 1] = "void_essential:stone"
+queue[#queue + 1] = "void_essential:water_source"
+queue[#queue + 1] = "void_essential:river_water_source"
 
-if core.get_modpath("mcl_core") then
-    queue[#queue + 1] = "mcl_core:ironblock"
-
-    queue[#queue + 1] = "mcl_core:glass"
-    for _, color in ipairs({
-        "red", "green", "blue", "light_blue", "black", "white", "yellow", "brown", "orange", "pink",
-        "gray", "lime", "silver", "magenta", "purple", "cyan",
-    }) do
-        queue[#queue + 1] = "mcl_core:glass_" .. color
-    end
-end
-
-if core.get_modpath("void_essential") then
-    queue[#queue + 1] = "void_essential:stone"
-    queue[#queue + 1] = "void_essential:water_source"
-    queue[#queue + 1] = "void_essential:river_water_source"
-end
 
 -- TODO: Implement copper block after dealing with oxidation
 --       (or simply only allow waxed?)
 
 for _, name in ipairs(queue) do
-    if not core.registered_nodes[name] then
-        logger:error(("Node %s loaded in the registeration queue but is not found.")
-            :format(name))
-    else
+    if core.registered_nodes[name] then
         _ad.register_platform_gate(name)
     end
 end
