@@ -66,6 +66,8 @@ core.register_globalstep(function()
                 if wagon_data then
                     local _, prototype = advtrains.get_wagon_prototype(wagon_data)
                     local door_entry = prototype.door_entry or default_door_entry
+                    local wagon_width = prototype.wagon_width or 3
+                    local platform_offset = (wagon_width - 1) / 2
                     for _, ino in ipairs(door_entry) do
                         -- Open doors at where door_entry are
                         -- see: wagon:on_step
@@ -74,29 +76,34 @@ core.register_globalstep(function()
                             local fct = wagon_data.wagon_flipped and -1 or 1
                             local aci = advtrains.path_get_index_by_offset(train, index, ino * fct)
                             local ix1, ix2 = advtrains.path_get_adjacent(train, aci)
-                            local add = {
-                                x = (ix2.z - ix1.z) * train.door_open,
-                                y = 1,
-                                z = (ix1.x - ix2.x) * train.door_open
-                            }
+                            local add_x = round((ix2.z - ix1.z) * train.door_open)
+                            local add_z = round((ix1.x - ix2.x) * train.door_open)
                             for _, pos in ipairs(path_get_adjacent(train, aci)) do
-                                local platform_pos = {
-                                    x = round(pos.x + add.x),
-                                    y = round(pos.y + add.y),
-                                    z = round(pos.z + add.z),
-                                }
-                                if advtrains.is_node_loaded(platform_pos) then
-                                    local hash = core.hash_node_position(platform_pos)
-                                    local node = core.get_node(platform_pos)
-                                    local def = core.registered_nodes[node.name]
-                                    if not doors_opened_pos[hash]
-                                        and def.groups
-                                        and def.groups.advtrains_doors == 1 then
-                                        if def.groups.advtrains_doors_closed == 1 then
-                                            node.name = def._advtrains_doors_counterpart
-                                            core.swap_node(platform_pos, node)
+                                for _, platform_pos in ipairs({
+                                    -- {
+                                    --     x = pos.x + add_x,
+                                    --     y = pos.y + 1,
+                                    --     z = pos.z + add_z,
+                                    -- },
+                                    {
+                                        x = pos.x + add_x * platform_offset,
+                                        y = pos.y + 1,
+                                        z = pos.z + add_z * platform_offset,
+                                    },
+                                }) do
+                                    if advtrains.is_node_loaded(platform_pos) then
+                                        local hash = core.hash_node_position(platform_pos)
+                                        local node = core.get_node(platform_pos)
+                                        local def = core.registered_nodes[node.name]
+                                        if not doors_opened_pos[hash]
+                                            and def.groups
+                                            and def.groups.advtrains_doors == 1 then
+                                            if def.groups.advtrains_doors_closed == 1 then
+                                                node.name = def._advtrains_doors_counterpart
+                                                core.swap_node(platform_pos, node)
+                                            end
+                                            doors_opened_pos[hash] = true
                                         end
-                                        doors_opened_pos[hash] = true
                                     end
                                 end
                             end
