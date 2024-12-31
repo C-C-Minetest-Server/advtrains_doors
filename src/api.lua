@@ -215,7 +215,7 @@ do
         screen = true,
     }
     door_variants.platform_screen_opened = {
-        node_box = add_table_array(door_variants.platform_gate_fixed.node_box, { 0, 0, 0, 0, 1, 0 }),
+        node_box = add_table_array(door_variants.platform_gate_opened.node_box, { 0, 0, 0, 0, 1, 0 }),
         counterpart = "platform_screen",
         state = "opened",
         screen = true,
